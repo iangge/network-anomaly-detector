@@ -100,28 +100,25 @@ class NetworkAnomalyDetector:
         return self.data
     
     def preprocess_data(self):
-        """Preprocess the data for anomaly detection"""
-        if self.data is None:
-            print("No data loaded. Please load data first.")
-            return False
-        
-        # Select numerical features
-        numerical_features = ['packet_size', 'duration', 'bytes_sent', 'bytes_received', 'hour']
-        
-        # Add encoded categorical features if they exist
-        if 'protocol_encoded' in self.data.columns:
-            numerical_features.extend(['protocol_encoded', 'port_encoded'])
-        
-        self.features = self.data[numerical_features].copy()
-        
-        # Handle missing values
-        self.features = self.features.fillna(self.features.mean())
-        
-        # Scale features
-        self.features_scaled = self.scaler.fit_transform(self.features)
-        
-        print(f"Data preprocessed. Features shape: {self.features.shape}")
-        return True
+    	if self.data is None:
+        	print("No data loaded. Please load data first.")
+        	return False
+
+    	# Fix: ensure timestamp exists and create hour
+    	self.data['timestamp'] = pd.to_datetime(self.data['timestamp'], errors='coerce')
+    	if 'hour' not in self.data.columns:
+        	self.data['hour'] = self.data['timestamp'].dt.hour
+
+    	numerical_features = ['packet_size', 'duration', 'bytes_sent', 'bytes_received', 'hour']
+
+    	if 'protocol_encoded' in self.data.columns:
+        	numerical_features.extend(['protocol_encoded', 'port_encoded'])
+    	self.features = self.data[numerical_features].copy()
+    	self.features = self.features.fillna(self.features.mean())
+    	self.features_scaled = self.scaler.fit_transform(self.features)
+
+    	print(f"Data preprocessed. Features shape: {self.features.shape}")
+    	return True
     
     def train_isolation_forest(self, contamination=0.1):
         """Train Isolation Forest model"""
