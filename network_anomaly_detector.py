@@ -414,7 +414,7 @@ def analyze_network():
     """API endpoint to run analysis and return dashboard data"""
     try:
         # Generate sample data
-        detector.generate_sample_data()
+        detector.load_data("realistic_port_scan_traffic.csv")
         
         # Preprocess and analyze
         detector.preprocess_data()

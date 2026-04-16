@@ -10,7 +10,7 @@ def dashboard():
 
 @app.route('/api/analyze')
 def analyze():
-    detector.generate_sample_data()
+    detector.load_data("realistic_port_scan_traffic.csv")
     detector.preprocess_data()
     detector.detect_anomalies()
     data = detector.get_dashboard_data()
